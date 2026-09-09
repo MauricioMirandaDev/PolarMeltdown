@@ -5,6 +5,9 @@
 #include "GameFramework/GameModeBase.h"
 #include "PolarGameModeBase.generated.h"
 
+class AGrid;
+class ATile;
+
 UCLASS()
 class POLARMELTDOWN_API APolarGameModeBase : public AGameModeBase
 {
@@ -20,5 +23,10 @@ public:
 protected:
 
 private:
+	// Components for gameplay
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AGrid> GridClass;
 
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	AGrid* GameGrid; 
 };

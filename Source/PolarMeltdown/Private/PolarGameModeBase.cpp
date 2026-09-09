@@ -1,5 +1,7 @@
 
 #include "PolarGameModeBase.h"
+#include "PolarMeltdown/PUblic/Actors/Grid.h"
+#include "PolarMeltdown/Public/Actors/Tile.h"
 
 // Set default values
 APolarGameModeBase::APolarGameModeBase()
@@ -10,6 +12,21 @@ APolarGameModeBase::APolarGameModeBase()
 // Call BeginPlay() on actors
 void APolarGameModeBase::StartPlay()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("STARTING GAME"));
+	Super::StartPlay();
+
+	FVector SpawnLocation = FVector(0.0f);
+	FRotator SpawnRotation = FRotator(0.0);
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Owner = this;
+	SpawnParameters.Instigator = GetInstigator();
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	if (GridClass)
+	{
+		GetWorld()->SpawnActor<AGrid>(GridClass, SpawnLocation, SpawnRotation, SpawnParameters);
+	}
+
+	/*
+	TODO:
+	Spawn player at beginning tile*/
 }
