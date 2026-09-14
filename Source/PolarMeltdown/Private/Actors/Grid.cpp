@@ -1,6 +1,5 @@
 
 #include "Actors/Grid.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PolarMeltdown/Public/Actors/Tile.h"
 
 // Sets default values
@@ -16,8 +15,17 @@ void AGrid::BeginPlay()
 	Super::BeginPlay();
 	
 	SetActorTickEnabled(false); 
+}
 
-	// Populate the grid with a 2D array of tiles
+// Called every frame
+void AGrid::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+// Create a 2D array of tiles
+void AGrid::CreateGrid(FMapInfo* Map)
+{
 	if (TileClass)
 	{
 		FVector SpawnLocation = FVector(0.0f);
@@ -27,36 +35,42 @@ void AGrid::BeginPlay()
 		SpawnParameters.Instigator = GetInstigator();
 		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		for (int x = 0; x < 5; x++) // WIDTH / COLUMNS
+		for (int x = 0; x < Map->MapWidth; x++) // WIDTH / COLUMNS
 		{
-			FTileRow NewRow = FTileRow(); 
+			FTileRow NewRow = FTileRow();
 
-			for (int y = 0; y < 3; y++) // HEIGHT / ROWS
+			for (int y = 0; y < Map->MapLength; y++) // HEIGHT / ROWS
 			{
-				ATile* NewTile = GetWorld()->SpawnActor<ATile>(TileClass, SpawnLocation, SpawnRotation, SpawnParameters);
-				NewTile->SetTileCoordinates(x, y); 
-				NewRow.GridRows.Add(NewTile);
+				TCHAR CurrentChar = Map->MapLayout[(x * Map->MapWidth) + y];
+				ATile* NewTile;
 
+				// Spawn a tile wherever there is a '1' in the map layout
+				switch (CurrentChar)
+				{
+					case '1':
+						NewTile = GetWorld()->SpawnActor<ATile>(TileClass, SpawnLocation, SpawnRotation, SpawnParameters);
+						NewTile->SetTileCoordinates(x, y);
+						NewRow.GridRows.Add(NewTile);
+						break;
+					default:
+						break;
+				}
+
+				// Spawn the next tile 1 meter to the right
 				SpawnLocation.X += 100.0f;
 			}
 
+			// Start the next row 1 meter in front
 			GridColumns.Add(NewRow);
 
 			SpawnLocation.Y += 100.0f;
 			SpawnLocation.X = 0.0f;
 		}
-
-		/*
-		* How to access tile : GridColumns[x coordinate].GridRows[y]
-		* 
-		* EX: GridColumns[4].GridRows[2]
-		*/
 	}
 }
 
-// Called every frame
-void AGrid::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
+/*
+* How to access tile : GridColumns[x coordinate].GridRows[y]
+*
+* EX: GridColumns[4].GridRows[2]
+*/

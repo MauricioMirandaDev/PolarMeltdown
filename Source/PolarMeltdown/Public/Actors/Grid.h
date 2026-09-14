@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PolarMeltdown/Public/MapInfo.h"
 #include "Grid.generated.h"
 
 class ATile; 
@@ -45,4 +46,6 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TArray<FTileRow> GridColumns;
+
+	void CreateGrid(FMapInfo* Map); 
 };

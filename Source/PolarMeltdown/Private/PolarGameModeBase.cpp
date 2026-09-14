@@ -1,5 +1,6 @@
 
 #include "PolarGameModeBase.h"
+#include "Engine/DataTable.h"
 #include "PolarMeltdown/PUblic/Actors/Grid.h"
 #include "PolarMeltdown/Public/Actors/Tile.h"
 
@@ -15,7 +16,7 @@ void APolarGameModeBase::StartPlay()
 	Super::StartPlay();
 
 	FVector SpawnLocation = FVector(0.0f);
-	FRotator SpawnRotation = FRotator(0.0);
+	FRotator SpawnRotation = FRotator(0.0f);
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = this;
 	SpawnParameters.Instigator = GetInstigator();
@@ -23,7 +24,14 @@ void APolarGameModeBase::StartPlay()
 
 	if (GridClass)
 	{
-		GetWorld()->SpawnActor<AGrid>(GridClass, SpawnLocation, SpawnRotation, SpawnParameters);
+		FString ContextString = TEXT("Context String");
+		SelectedMap = PolarGameDataTable->FindRow<FMapInfo>(TEXT("Square"), ContextString);
+
+		if (SelectedMap)
+		{
+			GameGrid = GetWorld()->SpawnActor<AGrid>(GridClass, SpawnLocation, SpawnRotation, SpawnParameters);
+			GameGrid->CreateGrid(SelectedMap); 
+		}
 	}
 
 	/*
