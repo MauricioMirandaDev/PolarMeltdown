@@ -6,8 +6,22 @@
 #include "PolarMeltdown/Public/MapInfo.h"
 #include "PolarGameModeBase.generated.h"
 
-class AGrid;
 class ATile;
+class APolarCharacter; 
+class APolarPlayerController; 
+
+USTRUCT(BlueprintType)
+struct FTileRow
+{
+	GENERATED_BODY()
+
+	TArray<ATile*> GridRows;
+
+	FTileRow()
+	{
+		GridRows.Empty();
+	}
+};
 
 UCLASS()
 class POLARMELTDOWN_API APolarGameModeBase : public AGameModeBase
@@ -24,16 +38,28 @@ public:
 protected:
 
 private:
-	// Components for gameplay
+	// Components, functions, and variables for gameplay
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AGrid> GridClass;
+	TSubclassOf<ATile> TileClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APolarCharacter> PlayerClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UDataTable* PolarGameDataTable; 
 
-	// Grid actor spawned in game
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	AGrid* GameGrid; 
+	void InitializeGrid();
+
+	void InitializePlayer(APolarPlayerController* PlayerController, FVector SpawnLocation, FRotator SpawnRotation);
+
+	TArray<FTileRow> GridColumns;
 
 	FMapInfo* SelectedMap;
+
+	// Player controller references
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Players", meta = (AllowPrivateAccess = "true"))
+	APolarPlayerController* PlayerOne;
+		
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Players", meta = (AllowPrivateAccess = "true"))
+	APolarPlayerController* PlayerTwo;
 };
