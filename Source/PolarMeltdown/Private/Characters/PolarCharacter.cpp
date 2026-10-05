@@ -32,4 +32,12 @@ void APolarCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+// Use a linear interploation to move the player's location
+void APolarCharacter::LerpPlayerLocation(float Alpha)
+{
+	FVector LerpedLocation = FMath::Lerp(StartLocation, EndLocation, Alpha);
+
+	SetActorLocation(LerpedLocation);
+}
+
 

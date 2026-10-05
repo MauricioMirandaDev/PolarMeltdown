@@ -107,7 +107,10 @@ void APolarGameModeBase::InitializePlayer(APolarPlayerController* PlayerControll
 	APolarCharacter* NewPlayer = GetWorld()->SpawnActor<APolarCharacter>(PlayerClass, SpawnLocation, SpawnRotation);
 
 	if (NewPlayer)
+	{
 		PlayerController->Possess(NewPlayer);
+		PlayerController->SetOwningCharacter(NewPlayer);
+	}
 }
 
 /*

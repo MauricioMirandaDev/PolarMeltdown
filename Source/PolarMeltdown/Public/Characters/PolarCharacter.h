@@ -17,6 +17,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Friend class to help with input bindings
+	friend class APolarPlayerController;
+
+	// Functions for gameplay
+	UFUNCTION(BlueprintImplementableEvent)
+	void MoveCharacter(); 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -28,4 +35,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
+
+	// Functions for gameplay
+	UFUNCTION(BlueprintCallable)
+	void LerpPlayerLocation(float Alpha); 
+
+	FVector StartLocation;
+
+	FVector EndLocation;
 };
