@@ -16,6 +16,8 @@ APolarCharacter::APolarCharacter()
 	// Create camera component and set default values
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
+
+	bCanMove = true;
 }
 
 // Called when the game starts or when spawned
@@ -38,6 +40,13 @@ void APolarCharacter::LerpPlayerLocation(float Alpha)
 	FVector LerpedLocation = FMath::Lerp(StartLocation, EndLocation, Alpha);
 
 	SetActorLocation(LerpedLocation);
+}
+
+// Reset StartLocation and EndLocation
+void APolarCharacter::FinishMove()
+{
+	StartLocation = GetActorLocation();
+	EndLocation = GetActorLocation(); 
 }
 
 

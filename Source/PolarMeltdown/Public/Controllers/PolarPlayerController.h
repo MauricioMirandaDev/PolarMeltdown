@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "InputActionValue.h"
 #include "PolarPlayerController.generated.h"
 
 class UInputAction;
@@ -32,34 +33,19 @@ protected:
 	virtual void SetupInputComponent() override;
 
 private:
-	// Components for enhanced input system 
+	// Components, functions, and variables for enhanced input system 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enhanced Input System", meta = (AllowPrivateAccess = "true"))
 	class UInputMappingContext* InputMappingContext;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enhanced Input System", meta = (AllowPrivateAccess = "true"))
-	UInputAction* InputAction_Select;
+	UInputAction* InputAction_Move;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enhanced Input System", meta = (AllowPrivateAccess = "true"))
-	UInputAction* InputAction_MoveUp;
+	UInputAction* InputAction_SelectDirection;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enhanced Input System", meta = (AllowPrivateAccess = "true"))
-	UInputAction* InputAction_MoveDown;
+	void CallMove();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enhanced Input System", meta = (AllowPrivateAccess = "true"))
-	UInputAction* InputAction_MoveLeft;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enhanced Input System", meta = (AllowPrivateAccess = "true"))
-	UInputAction* InputAction_MoveRight;
-
-	void CallSelect();
-
-	void CallMoveUp();
-
-	void CallMoveDown();
-
-	void CallMoveLeft();
-
-	void CallMoveRight(); 
+	void CallSelectDirection(const FInputActionValue& Value);
 
 	APolarCharacter* OwningCharacter; 
 

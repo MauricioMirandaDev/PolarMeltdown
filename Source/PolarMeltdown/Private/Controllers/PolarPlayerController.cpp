@@ -8,11 +8,10 @@
 APolarPlayerController::APolarPlayerController()
 {
 	InputMappingContext = nullptr;
-	InputAction_Select = nullptr;
-	InputAction_MoveUp = nullptr;
-	InputAction_MoveDown = nullptr;
-	InputAction_MoveLeft = nullptr;
-	InputAction_MoveRight = nullptr;
+
+	InputAction_Move = nullptr;
+	InputAction_SelectDirection = nullptr;
+
 	OwningCharacter = nullptr;
 	DebugTextColor = FColor::Red; 
 }
@@ -56,43 +55,39 @@ void APolarPlayerController::SetupInputComponent()
 	// Bind actions to input system
 	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent))
 	{
-		EnhancedInput->BindAction(InputAction_Select, ETriggerEvent::Triggered, this, &APolarPlayerController::CallSelect);
-		EnhancedInput->BindAction(InputAction_MoveUp, ETriggerEvent::Triggered, this, &APolarPlayerController::CallMoveUp);
-		EnhancedInput->BindAction(InputAction_MoveDown, ETriggerEvent::Triggered, this, &APolarPlayerController::CallMoveDown);
-		EnhancedInput->BindAction(InputAction_MoveLeft, ETriggerEvent::Triggered, this, &APolarPlayerController::CallMoveLeft);
-		EnhancedInput->BindAction(InputAction_MoveRight, ETriggerEvent::Triggered, this, &APolarPlayerController::CallMoveRight);
+		EnhancedInput->BindAction(InputAction_Move, ETriggerEvent::Triggered, this, &APolarPlayerController::CallMove);
+		EnhancedInput->BindAction(InputAction_SelectDirection, ETriggerEvent::Triggered, this, &APolarPlayerController::CallSelectDirection);
 	}
 }
 
-void APolarPlayerController::CallSelect()
+// Move the character once the player has selected a direction
+void APolarPlayerController::CallMove()
 {
-	if (GEngine)
+	if (OwningCharacter->bCanMove && OwningCharacter->EndLocation.Size() != 0.0f)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, DebugTextColor, TEXT("SELECT PRESSED"));
+		OwningCharacter->MoveCharacter();
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, DebugTextColor, TEXT("MOVING CHARACTER"));
 	}
 }
 
-void APolarPlayerController::CallMoveUp()
+// Select the direction for the player to move in
+void APolarPlayerController::CallSelectDirection(const FInputActionValue& Value)
 {
-	OwningCharacter->MoveCharacter();
-}
+	const FVector2D MovementValue = Value.Get<FVector2D>();
 
-void APolarPlayerController::CallMoveDown()
-{
-	OwningCharacter->MoveCharacter();
-}
+	if (OwningCharacter->bCanMove)
+	{
+		float XDirection = FMath::RoundToFloat(MovementValue.Y);
+		float YDirection = FMath::RoundToFloat(MovementValue.X);
 
-void APolarPlayerController::CallMoveLeft()
-{
-	OwningCharacter->MoveCharacter();
-}
+		FVector Direction = FVector(XDirection, YDirection, 0.0f);
+		Direction *= 100.0f;
 
-void APolarPlayerController::CallMoveRight()
-{
-	OwningCharacter->StartLocation = OwningCharacter->GetActorLocation();
-	OwningCharacter->EndLocation = OwningCharacter->GetActorLocation() + FVector(0.0f, 100.0f, 0.0f);
-
-	OwningCharacter->MoveCharacter();
+		OwningCharacter->StartLocation = OwningCharacter->GetActorLocation();
+		OwningCharacter->EndLocation = OwningCharacter->StartLocation + Direction;
+	}
 }
 
 

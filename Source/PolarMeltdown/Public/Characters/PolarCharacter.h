@@ -36,9 +36,15 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
 
-	// Functions for gameplay
+	// Components, functions, and variables for gameplay
 	UFUNCTION(BlueprintCallable)
 	void LerpPlayerLocation(float Alpha); 
+
+	UFUNCTION(BlueprintCallable)
+	void FinishMove();
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bCanMove; 
 
 	FVector StartLocation;
 
