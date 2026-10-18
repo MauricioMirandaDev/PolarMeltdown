@@ -5,6 +5,8 @@
 #include "GameFramework/Character.h"
 #include "PolarCharacter.generated.h"
 
+class ADirectionalArrows; 
+
 UCLASS()
 class POLARMELTDOWN_API APolarCharacter : public ACharacter
 {
@@ -24,6 +26,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void MoveCharacter(); 
 
+	// Getter function for Arrows
+	ADirectionalArrows* GetArrows(); 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -41,10 +46,18 @@ private:
 	void LerpPlayerLocation(float Alpha); 
 
 	UFUNCTION(BlueprintCallable)
+	void PrepareMove(); 
+
+	UFUNCTION(BlueprintCallable)
 	void FinishMove();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<ADirectionalArrows> ArrowClass;
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bCanMove; 
+
+	ADirectionalArrows* Arrows; 
 
 	FVector StartLocation;
 

@@ -47,6 +47,8 @@ private:
 
 	void CallSelectDirection(const FInputActionValue& Value);
 
+	void StopShowingDirection();
+
 	APolarCharacter* OwningCharacter; 
 
 	FColor DebugTextColor; 

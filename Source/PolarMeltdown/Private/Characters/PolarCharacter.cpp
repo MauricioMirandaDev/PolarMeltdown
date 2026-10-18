@@ -2,6 +2,7 @@
 #include "Characters/PolarCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "PolarMeltdown/Public/Actors/DirectionalArrows.h"
 
 // Sets default values
 APolarCharacter::APolarCharacter()
@@ -18,6 +19,15 @@ APolarCharacter::APolarCharacter()
 	Camera->SetupAttachment(SpringArm);
 
 	bCanMove = true;
+	Arrows = nullptr; 
+	StartLocation = FVector(0.0f);
+	EndLocation = FVector(0.0f);
+}
+
+// Getter function to access Arrows
+ADirectionalArrows* APolarCharacter::GetArrows()
+{
+	return Arrows;
 }
 
 // Called when the game starts or when spawned
@@ -26,6 +36,21 @@ void APolarCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	SetActorTickEnabled(false); 
+
+	// Spawn directional arrows and set this character as the parent
+	if (ArrowClass)
+	{
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = this;
+		SpawnParameters.Instigator = GetInstigator();
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		Arrows = GetWorld()->SpawnActor<ADirectionalArrows>(ArrowClass, GetActorLocation(), GetActorRotation(), SpawnParameters);
+		Arrows->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+		Arrows->SetOwner(this);
+		Arrows->SetPerpendicularArrowsVisible(true);
+		Arrows->SetDiagonalArrowsVisible(false);
+	}
 }
 
 // Called every frame
@@ -42,9 +67,24 @@ void APolarCharacter::LerpPlayerLocation(float Alpha)
 	SetActorLocation(LerpedLocation);
 }
 
+// Set variables before linear interpolation
+void APolarCharacter::PrepareMove()
+{
+	bCanMove = false;
+	Arrows->SetPerpendicularArrowsVisible(false);
+
+	FVector MovementDirection = EndLocation - StartLocation;
+	MovementDirection.Normalize();
+
+	SetActorRotation(MovementDirection.Rotation());
+}
+
 // Reset StartLocation and EndLocation
 void APolarCharacter::FinishMove()
 {
+	bCanMove = true;
+	Arrows->SetPerpendicularArrowsVisible(true);
+
 	StartLocation = GetActorLocation();
 	EndLocation = GetActorLocation(); 
 }

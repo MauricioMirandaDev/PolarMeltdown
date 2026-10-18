@@ -2,6 +2,7 @@
 #include "Controllers/PolarPlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "PolarMeltdown/Public/Actors/DirectionalArrows.h"
 #include "PolarMeltdown/Public/Characters/PolarCharacter.h"
 
 // Sets default values
@@ -57,6 +58,7 @@ void APolarPlayerController::SetupInputComponent()
 	{
 		EnhancedInput->BindAction(InputAction_Move, ETriggerEvent::Triggered, this, &APolarPlayerController::CallMove);
 		EnhancedInput->BindAction(InputAction_SelectDirection, ETriggerEvent::Triggered, this, &APolarPlayerController::CallSelectDirection);
+		EnhancedInput->BindAction(InputAction_SelectDirection, ETriggerEvent::Completed, this, &APolarPlayerController::StopShowingDirection);
 	}
 }
 
@@ -65,10 +67,17 @@ void APolarPlayerController::CallMove()
 {
 	if (OwningCharacter->bCanMove && OwningCharacter->EndLocation.Size() != 0.0f)
 	{
-		OwningCharacter->MoveCharacter();
-
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, DebugTextColor, TEXT("MOVING CHARACTER"));
+		FVector Direction = OwningCharacter->EndLocation - OwningCharacter->StartLocation;
+		Direction.Normalize();
+		if (Direction.X != 0.0f && Direction.Y != 0.0f)
+		{
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, DebugTextColor, TEXT("CANNOT MOVE DIAGONALLY"));
+		}
+		else
+		{
+			OwningCharacter->MoveCharacter();
+		}
 	}
 }
 
@@ -83,11 +92,18 @@ void APolarPlayerController::CallSelectDirection(const FInputActionValue& Value)
 		float YDirection = FMath::RoundToFloat(MovementValue.X);
 
 		FVector Direction = FVector(XDirection, YDirection, 0.0f);
-		Direction *= 100.0f;
+		Direction.Normalize();
 
 		OwningCharacter->StartLocation = OwningCharacter->GetActorLocation();
-		OwningCharacter->EndLocation = OwningCharacter->StartLocation + Direction;
+		OwningCharacter->EndLocation = OwningCharacter->StartLocation + FVector(Direction.X * 100.0f, Direction.Y * 100.0f, 0.0f);
+		OwningCharacter->Arrows->ShowDesiredDirection(OwningCharacter->GetActorForwardVector(), OwningCharacter->GetActorRightVector(), Direction);
 	}
+}
+
+// Stop selecting a direction
+void APolarPlayerController::StopShowingDirection()
+{
+	OwningCharacter->Arrows->ResetDirection();
 }
 
 
