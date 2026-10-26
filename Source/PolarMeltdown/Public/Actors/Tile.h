@@ -44,6 +44,14 @@ public:
 
 	void SetTileCoordinates(int32 XCoord, int32 YCoord);
 
+	// Getter and setter functions for bIsEmpty
+	bool GetIsEmtpy();
+
+	void SetIsEmtpy(bool bEmpty);
+
+	// Functions for gameplay
+	void DestroyTile();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -57,6 +65,9 @@ private:
 	class UStaticMeshComponent* TileMesh;
 
 	// Gameplay components
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
 	FTileCoordinates TileCoordinates; 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	bool bIsEmpty; 
 };

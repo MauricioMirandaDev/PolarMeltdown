@@ -26,9 +26,17 @@ void APolarGameModeBase::StartPlay()
 	{
 		InitializeGrid();
 	}
+
+	CheckTileNeighbors(10, 0);
 }
 
-// Created a 2D array of tiles
+// Remove a tile from the grid
+void APolarGameModeBase::RemoveTileFromGrid(int32 Column, int32 Row)
+{
+	GridColumns[Column].GridRows[Row]->DestroyTile();
+}
+
+// Creat a 2D array of tiles
 void APolarGameModeBase::InitializeGrid()
 {
 	if (TileClass)
@@ -110,6 +118,25 @@ void APolarGameModeBase::InitializePlayer(APolarPlayerController* PlayerControll
 	{
 		PlayerController->Possess(NewPlayer);
 		PlayerController->SetOwningCharacter(NewPlayer);
+	}
+}
+
+void APolarGameModeBase::CheckTileNeighbors(int32 Column, int32 Row)
+{
+	int32 MinColumn = FMath::Clamp(Column - 1, 0, SelectedMap->MapWidth);
+	int32 MinRow = FMath::Clamp(Row - 1, 0, SelectedMap->MapWidth);
+	int32 MaxColumn = FMath::Clamp(Column + 1, 0, SelectedMap->MapWidth);
+	int32 MaxRow = FMath::Clamp(Row + 1, 0, SelectedMap->MapWidth);
+
+	for (int x = MinColumn; x <= MaxColumn; x++)
+	{
+		for (int y = MinRow; y <= MaxRow; y++)
+		{
+			if (x != Column || y != Row)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Neighbor: %d, %d"), x, y);
+			}
+		}
 	}
 }
 

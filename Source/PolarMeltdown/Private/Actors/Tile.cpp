@@ -15,8 +15,10 @@ ATile::ATile()
 	// Create static mesh component
 	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tile Mesh"));
 	TileMesh->SetupAttachment(Root);
+	TileMesh->SetCollisionProfileName(TEXT("Tile"));
 
 	TileCoordinates = FTileCoordinates(0, 0);
+	bIsEmpty = false;
 }
 
 // Called when the game starts or when spawned
@@ -39,10 +41,31 @@ FTileCoordinates ATile::GetTileCoordinates()
 	return TileCoordinates;
 }
 
-// Setter function to assign values to TileCoordinates variables
+// Setter function to assign values to TileCoordinates
 void ATile::SetTileCoordinates(int32 XCoord, int32 YCoord)
 {
 	TileCoordinates.XCoordinate = XCoord;
 	TileCoordinates.YCoordinate = YCoord; 
 }
+
+// Getter function to access bIsEmtpy
+bool ATile::GetIsEmtpy()
+{
+	return bIsEmpty;
+}
+
+// Setter function to assign value to bIsEmtpy
+void ATile::SetIsEmtpy(bool bEmpty)
+{
+	bEmpty = bIsEmpty; 
+}
+
+// Sets a tile so that it is no longer walkable
+void ATile::DestroyTile()
+{
+	bIsEmpty = true;
+	TileMesh->SetHiddenInGame(true, true);
+}
+
+
 

@@ -35,6 +35,9 @@ public:
 	// Calls BeginPlay() on actors
 	virtual void StartPlay() override;
 
+	// Functions for gameplay
+	void RemoveTileFromGrid(int32 Column, int32 Row);
+
 protected:
 
 private:
@@ -51,6 +54,8 @@ private:
 	void InitializeGrid();
 
 	void InitializePlayer(APolarPlayerController* PlayerController, FVector SpawnLocation, FRotator SpawnRotation);
+
+	void CheckTileNeighbors(int32 Column, int32 Row);
 
 	TArray<FTileRow> GridColumns;
 

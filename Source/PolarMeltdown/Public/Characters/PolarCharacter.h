@@ -6,6 +6,7 @@
 #include "PolarCharacter.generated.h"
 
 class ADirectionalArrows; 
+class ATile;
 
 UCLASS()
 class POLARMELTDOWN_API APolarCharacter : public ACharacter
@@ -57,7 +58,13 @@ private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bCanMove; 
 
+	ATile* TileTrace();
+
 	ADirectionalArrows* Arrows; 
+
+	ATile* LastTile;
+
+	class APolarGameModeBase* GameModeRef; 
 
 	FVector StartLocation;
 
