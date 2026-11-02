@@ -35,8 +35,24 @@ public:
 	// Calls BeginPlay() on actors
 	virtual void StartPlay() override;
 
-	// Functions for gameplay
-	void RemoveTileFromGrid(int32 Column, int32 Row);
+	// Events and functions for gameplay
+	UFUNCTION(BlueprintImplementableEvent)
+	void MovePlayer();
+
+	UFUNCTION(BlueprintCallable)
+	void PreparePlayerMove();
+
+	UFUNCTION(BlueprintCallable)
+	void EndPlayerMove();
+
+	UFUNCTION(BlueprintCallable)
+	void LerpCharacterLocation(float Alpha);
+
+	void StartPlayerTurn();
+
+	void EndPlayerTurn();
+
+	bool CanMoveToTile();
 
 protected:
 
@@ -55,11 +71,15 @@ private:
 
 	void InitializePlayer(APolarPlayerController* PlayerController, FVector SpawnLocation, FRotator SpawnRotation);
 
-	void CheckTileNeighbors(int32 Column, int32 Row);
+	void IterateThroughTileNeighbors(int32 Column, int32 Row);
+
+	ATile* TileTrace(FVector TraceStart, FVector TraceEnd);
 
 	TArray<FTileRow> GridColumns;
 
 	FMapInfo* SelectedMap;
+
+	ATile* TileToRemove;
 
 	// Player controller references
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Players", meta = (AllowPrivateAccess = "true"))
@@ -67,4 +87,6 @@ private:
 		
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Players", meta = (AllowPrivateAccess = "true"))
 	APolarPlayerController* PlayerTwo;
+
+	APolarPlayerController* CurrentPlayer;
 };

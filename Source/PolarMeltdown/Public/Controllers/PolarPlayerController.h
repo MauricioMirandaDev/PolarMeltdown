@@ -23,10 +23,27 @@ public:
 
 	void SetDebugTextColor(FColor Color);
 
+	FColor DebugTextColor; 
+
 	// Getter and setter functions to access OwningCharacter
 	APolarCharacter* GetOwningCharacter(); 
 
 	void SetOwningCharacter(APolarCharacter* PolarCharacter);
+
+	// Getter and setter functions to access bCanMove
+	bool GetCanMove();
+
+	void SetCanMove(bool bNewCanMove);
+
+	// Getter and setter functions to access bLerpActive
+	bool GetLerpActive();
+
+	void SetLerpActive(bool bNewLerpActive);
+
+	// Getter and setter functions to access bHasDiagonalAbility
+	bool GetHasDiagonalAbility();
+
+	void SetHasDiagonalAbility(bool bNewHasAbility);
 
 protected:
 	// Called to bind functionality to input
@@ -51,5 +68,15 @@ private:
 
 	APolarCharacter* OwningCharacter; 
 
-	FColor DebugTextColor; 
+	// Components for gameplay
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	bool bCanMove;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	bool bLerpActive;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	bool bHasDiagonalAbility;
+
+	class APolarGameModeBase* GameModeRef;
 };

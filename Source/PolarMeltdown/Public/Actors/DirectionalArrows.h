@@ -8,6 +8,18 @@
 
 class UStaticMeshComponent;
 
+UENUM(BlueprintType)
+enum class EArrowDirection : uint8 {
+	ARROW_Forward UMETA(DisplayName = "Forward Arrow"),
+	ARROW_Backward UMETA(DisplayName = "Backward Arrow"),
+	ARROW_Left UMETA(DisplayName = "Left Arrow"),
+	ARROW_Right UMETA(DisplayName = "Right Arrow"),
+	ARROW_ForwardLeft UMETA(DisplayName = "Forward-Left Arrow"),
+	ARROW_ForwardRight UMETA(DisplayName = "Forward-Right Arrow"),
+	ARROW_BackwardLeft UMETA(DisplayName = "Backward-Left Arrow"),
+	ARROW_BackwardRight UMETA(DisplayName = "Backward-Right Arrow"),
+};
+
 UCLASS()
 class POLARMELTDOWN_API ADirectionalArrows : public AActor
 {
@@ -21,11 +33,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Functions for gameplay
+	void SetSingleArrowVisible(bool bShowArrow, EArrowDirection ArrowDirection);
+
 	void SetPerpendicularArrowsVisible(bool bShowPerpArrows);
 
 	void SetDiagonalArrowsVisible(bool bShowDiagArrows);
 
-	void ShowDesiredDirection(FVector ForwardVector, FVector RightVector, FVector Direction);
+	void ShowDesiredDirection(FVector Direction);
 
 	void ResetDirection();
 

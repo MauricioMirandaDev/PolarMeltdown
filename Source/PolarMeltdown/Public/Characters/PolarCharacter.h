@@ -6,6 +6,7 @@
 #include "PolarCharacter.generated.h"
 
 class ADirectionalArrows; 
+class APolarPlayerController;
 class ATile;
 
 UCLASS()
@@ -28,7 +29,14 @@ public:
 	void MoveCharacter(); 
 
 	// Getter function for Arrows
-	ADirectionalArrows* GetArrows(); 
+	ADirectionalArrows* GetDirectionalArrows(); 
+
+	// Setter function for ControllerRef
+	void SetPlayerController(APolarPlayerController* NewController);
+
+	FVector StartLocation;
+
+	FVector EndLocation;
 
 protected:
 	// Called when the game starts or when spawned
@@ -43,30 +51,15 @@ private:
 	class UCameraComponent* Camera;
 
 	// Components, functions, and variables for gameplay
-	UFUNCTION(BlueprintCallable)
-	void LerpPlayerLocation(float Alpha); 
-
-	UFUNCTION(BlueprintCallable)
-	void PrepareMove(); 
-
-	UFUNCTION(BlueprintCallable)
-	void FinishMove();
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<ADirectionalArrows> ArrowClass;
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	bool bCanMove; 
-
-	ATile* TileTrace();
+	bool bIsPlayerTurn;
 
 	ADirectionalArrows* Arrows; 
 
-	ATile* LastTile;
-
 	class APolarGameModeBase* GameModeRef; 
 
-	FVector StartLocation;
-
-	FVector EndLocation;
+	APolarPlayerController* ControllerRef;
 };

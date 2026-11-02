@@ -63,6 +63,37 @@ void ADirectionalArrows::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+// Show or hide one single arrow
+void ADirectionalArrows::SetSingleArrowVisible(bool bShowArrow, EArrowDirection ArrowDirection)
+{
+	switch (ArrowDirection)
+	{
+	case EArrowDirection::ARROW_Backward:
+		BackwardArrow->SetHiddenInGame(!bShowArrow);
+		break;
+	case EArrowDirection::ARROW_Left:
+		LeftArrow->SetHiddenInGame(!bShowArrow);
+		break;
+	case EArrowDirection::ARROW_Right:
+		RightArrow->SetHiddenInGame(!bShowArrow);
+		break;
+	case EArrowDirection::ARROW_ForwardLeft:
+		ForwardLeftArrow->SetHiddenInGame(!bShowArrow);
+		break;
+	case EArrowDirection::ARROW_ForwardRight:
+		ForwardRightArrow->SetHiddenInGame(!bShowArrow);
+		break;
+	case EArrowDirection::ARROW_BackwardLeft:
+		BackwardLeftArrow->SetHiddenInGame(!bShowArrow);
+	case EArrowDirection::ARROW_BackwardRight:
+		BackwardRightArrow->SetHiddenInGame(!bShowArrow);
+		break;
+	default:
+		ForwardArrow->SetHiddenInGame(!bShowArrow);
+		break;
+	}
+}
+
 // Show or hide perpendicular arrows
 void ADirectionalArrows::SetPerpendicularArrowsVisible(bool bShowPerpArrows)
 {
@@ -78,29 +109,45 @@ void ADirectionalArrows::SetDiagonalArrowsVisible(bool bShowDiagArrows)
 }
 
 // Show the desired direction the player wants to move in
-void ADirectionalArrows::ShowDesiredDirection(FVector ForwardVector, FVector RightVector, FVector Direction)
+void ADirectionalArrows::ShowDesiredDirection(FVector Direction)
 {
-	float DotProduct = FVector::DotProduct(ForwardVector, Direction);
-	float Angle = FMath::RadiansToDegrees(FMath::Acos(DotProduct));
+	float DotProduct = FVector::DotProduct(GetActorForwardVector(), Direction);
+	int32 Angle = FMath::RadiansToDegrees(FMath::Acos(DotProduct));
 
-	if (Angle == 0.0f)
+	switch (Angle)
 	{
+	case 45:
 		ResetDirection();
-		SetDirection(ForwardArrow);
-	}
-	else if (Angle == 90.0f)
-	{
+
+		if (FVector::DotProduct(GetActorRightVector(), Direction) >= 0.0f)
+			SetDirection(ForwardRightArrow);
+		else
+			SetDirection(ForwardLeftArrow);
+		break;
+	case 90:
 		ResetDirection();
-		
-		if (FVector::DotProduct(RightVector, Direction) >= 0.0f)
+
+		if (FVector::DotProduct(GetActorRightVector(), Direction) >= 0.0f)
 			SetDirection(RightArrow);
 		else
 			SetDirection(LeftArrow);
-	}
-	else if (Angle == 180.0f)
-	{
+		break;
+	case 135:
+		ResetDirection();
+
+		if (FVector::DotProduct(GetActorRightVector(), Direction) >= 0.0f)
+			SetDirection(BackwardRightArrow);
+		else
+			SetDirection(BackwardLeftArrow);
+		break;
+	case 180:
 		ResetDirection();
 		SetDirection(BackwardArrow);
+		break;
+	default:
+		ResetDirection();
+		SetDirection(ForwardArrow);
+		break;
 	}
 }
 

@@ -7,6 +7,7 @@
 #include "PolarMeltdown/Public/PolarGameModeBase.h"
 #include "PolarMeltdown/Public/Actors/DirectionalArrows.h"
 #include "PolarMeltdown/Public/Actors/Tile.h"
+#include "PolarMeltdown/Public/Controllers/PolarPlayerController.h"
 
 // Sets default values
 APolarCharacter::APolarCharacter()
@@ -22,18 +23,23 @@ APolarCharacter::APolarCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 
-	bCanMove = true;
+	bIsPlayerTurn = true;
 	Arrows = nullptr; 
-	LastTile = nullptr;
 	GameModeRef = nullptr; 
 	StartLocation = FVector(0.0f);
 	EndLocation = FVector(0.0f);
 }
 
 // Getter function to access Arrows
-ADirectionalArrows* APolarCharacter::GetArrows()
+ADirectionalArrows* APolarCharacter::GetDirectionalArrows()
 {
 	return Arrows;
+}
+
+// Setter function to set ControllerRef
+void APolarCharacter::SetPlayerController(APolarPlayerController* NewController)
+{
+	ControllerRef = NewController;
 }
 
 // Called when the game starts or when spawned
@@ -54,7 +60,7 @@ void APolarCharacter::BeginPlay()
 		Arrows = GetWorld()->SpawnActor<ADirectionalArrows>(ArrowClass, GetActorLocation(), GetActorRotation(), SpawnParameters);
 		Arrows->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 		Arrows->SetOwner(this);
-		Arrows->SetPerpendicularArrowsVisible(true);
+		Arrows->SetPerpendicularArrowsVisible(false);
 		Arrows->SetDiagonalArrowsVisible(false);
 	}
 
@@ -68,58 +74,6 @@ void APolarCharacter::BeginPlay()
 void APolarCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-// Use a linear interploation to move the player's location
-void APolarCharacter::LerpPlayerLocation(float Alpha)
-{
-	FVector LerpedLocation = FMath::Lerp(StartLocation, EndLocation, Alpha);
-
-	SetActorLocation(LerpedLocation);
-}
-
-// Set variables before linear interpolation
-void APolarCharacter::PrepareMove()
-{
-	bCanMove = false;
-	Arrows->SetPerpendicularArrowsVisible(false);
-	LastTile = TileTrace();
-
-	FVector MovementDirection = EndLocation - StartLocation;
-	MovementDirection.Normalize();
-
-	SetActorRotation(MovementDirection.Rotation());
-}
-
-// Reset StartLocation and EndLocation
-void APolarCharacter::FinishMove()
-{
-	bCanMove = true;
-	Arrows->SetPerpendicularArrowsVisible(true);
-
-	StartLocation = GetActorLocation();
-	EndLocation = GetActorLocation(); 
-
-	if (LastTile && GameModeRef)
-		GameModeRef->RemoveTileFromGrid(LastTile->GetTileCoordinates().XCoordinate, LastTile->GetTileCoordinates().YCoordinate);
-}
-
-// Perform a line trace to get the tile the player was previously standing on
-ATile* APolarCharacter::TileTrace()
-{
-	// Variables for line trace
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
-
-	TArray<AActor*> ActorsToIgnore;
-	ActorsToIgnore.Add(this);
-
-	FHitResult HitResult;
-
-	UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), GetActorLocation(), GetActorLocation() - FVector(0.0f, 0.0f, 500.0f), ObjectTypes, true, ActorsToIgnore, EDrawDebugTrace::None, OUT HitResult, true);
-	ATile* Tile = Cast<ATile>(HitResult.GetActor());
-
-	return Tile;
 }
 
 
